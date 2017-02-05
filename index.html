@@ -107,9 +107,9 @@
             var latLon1 = new LatLon(position1.lat(), position1.lng());
             distance = Math.abs(me.crossTrackDistanceTo(latLon0, latLon1));
         }
-        var html = '';
+        var html = 'select a marker to calculate distance to it or select two markers to calculate distance to line';
         if (distance != null) {
-            html += round(distance, 2)+'meters, &nbsp;'+round(distance/0.3048, 2)+'feet'
+            html = round(distance, 2)+'meters, &nbsp;'+round(distance/0.3048, 2)+'feet'
         }
         $('#distance').html(html);
         return html;
@@ -218,7 +218,10 @@
 
 //        selectedMarkers.push(markers[2]);
 //        selectedMarkers.push(markers[3]);
-//        calculateAndShowDistance(lat0,lat1);
+        setInterval(function(){
+            calculateAndShowDistance(lat0,lat0);
+        }, 1000);
+
     }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAIxQNvwDOPzEC4e1QRCbeW7MWGjNMf4lQ&callback=initMap" async defer></script>
