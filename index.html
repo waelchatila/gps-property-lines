@@ -39,22 +39,26 @@
 </div>
 <div id="map"></div>
 <script>
-    socket = io.connect("http://reachrover.local:80/test");
-    socket.on("coordinate broadcast", function(msg) {
-        for (var k in msg) {
-            if (k.includes("deg,m) rover")) {
-                $('#me').html(msg[k].replace(/,/g, ", "));
-                var ss = msg[k].split(',');
-                var lat = Number(ss[0]);
-                var lon = Number(ss[1]);
-                if (me == null) {
-                    me = marker(lat,lon,'me');
+    if (typeof io != 'undefined') {
+        socket = io.connect("http://reachrover.local:80/test");
+        socket.on("coordinate broadcast", function(msg) {
+            for (var k in msg) {
+                if (k.includes("deg,m) rover")) {
+                    $('#me').html(msg[k].replace(/,/g, ", "));
+                    var ss = msg[k].split(',');
+                    var lat = Number(ss[0]);
+                    var lon = Number(ss[1]);
+                    if (me == null) {
+                        me = marker(lat,lon,'me');
+                    }
+                    me.setPosition( new google.maps.LatLng(lat, lon));
+                    calculateAndShowDistance(lat, lon);
                 }
-                me.setPosition( new google.maps.LatLng(lat, lon));
-                calculateAndShowDistance(lat, lon);
             }
-        }
-    });
+        });
+    } else {
+        alert('can not reach rover');
+    }
 
     LatLon.prototype.crossTrackDistanceTo = function(pathStart, pathEnd, radius) {
         if (!(pathStart instanceof LatLon)) throw new TypeError('pathStart is not LatLon object');
