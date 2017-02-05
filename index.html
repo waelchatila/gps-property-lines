@@ -108,8 +108,8 @@
             distance = Math.abs(me.crossTrackDistanceTo(latLon0, latLon1));
         }
         var html = '';
-        if (distance) {
-            html += round(distance, 2)+'meters, &nbsp;'+round(distance/0.304, 2)+'feet'
+        if (distance != null) {
+            html += round(distance, 2)+'meters, &nbsp;'+round(distance/0.3048, 2)+'feet'
         }
         $('#distance').html(html);
         return html;
@@ -139,7 +139,7 @@
         ["70N 15'E", 616.64],
         ["80N 15'E", 272.01],
     ];
-    var coordinate_points = [];
+    var coordinatePoints = [];
 
     function marker(lat,lon, label) {
         var small_yellow = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAi0lEQVR42mNgQIAoIF4NxGegdCCSHAMzEC+NijL7v3p1+v8zZ6rAdGCg4X+g+EyYorS0NNv////PxMCxsRYghbEgRQcOHCjGqmjv3kKQor0gRQ8fPmzHquj27WaQottEmxQLshubopAQI5CiEJjj54N8t3FjFth369ZlwHw3jQENgMJpIzSc1iGHEwB8p5qDBbsHtAAAAABJRU5ErkJggg=='
@@ -178,13 +178,13 @@
 
         var current_coordinate = new LatLon(lat0, lon0);
         marker(current_coordinate.lat, current_coordinate.lon, 'AC1');
-        coordinate_points.push({lat: current_coordinate.lat, lng: current_coordinate.lon});
+        coordinatePoints.push({lat: current_coordinate.lat, lng: current_coordinate.lon});
         for (var i=0; i < deedPoints.length; i++) {
             var deed_point = deedPoints[i];
             var bearing = (typeof deed_point[0]) == 'string' ? Dms.parseDMS(deed_point[0]) : deed_point[0];
             var distance = ft(deed_point[1]);
             current_coordinate = current_coordinate.destinationPoint(distance, bearing);
-            coordinate_points.push({lat: current_coordinate.lat, lng: current_coordinate.lon});
+            coordinatePoints.push({lat: current_coordinate.lat, lng: current_coordinate.lon});
             var new_marker = marker(current_coordinate.lat, current_coordinate.lon, deed_point[2]);
             new_marker.addListener('click', function() {
                 var $this = this;
@@ -208,7 +208,7 @@
         }
 
         var borderLines = new google.maps.Polyline({
-            path: coordinate_points,
+            path: coordinatePoints,
             geodesic: true,
             strokeColor: '#FFffff',
             strokeOpacity: 0.5,
