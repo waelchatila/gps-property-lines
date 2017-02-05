@@ -90,20 +90,26 @@
         return (θ.toDegrees()+360) % 360;
     };
 
+    function round(value, decimals) {
+        return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
+    }
+
     function calculateAndShowDistance(lat,lon) {
-        var html = '';
         var me = new LatLon(lat, lon);
+        var distance = null;
         if (selectedMarkers.length == 1) {
             var position = selectedMarkers[0].getPosition();
-            html += me.distanceTo(new LatLon(position.lat(), position.lng()));
-            html += 'meters'
+            distance = me.distanceTo(new LatLon(position.lat(), position.lng()));
         } else if (selectedMarkers.length == 2) {
             var position0 = selectedMarkers[0].getPosition();
             var position1 = selectedMarkers[1].getPosition();
             var latLon0 = new LatLon(position0.lat(), position0.lng());
             var latLon1 = new LatLon(position1.lat(), position1.lng());
-            html += Math.abs(me.crossTrackDistanceTo(latLon0, latLon1));
-            html += 'meters';
+            distance = Math.abs(me.crossTrackDistanceTo(latLon0, latLon1));
+        }
+        var html = '';
+        if (distance) {
+            html += round(distance, 2)+'meters, &nbsp;'+round(distance/0.304)+'feet'
         }
         $('#distance').html(html);
         return html;
@@ -210,9 +216,9 @@
         });
         borderLines.setMap(map);
 
-//        selectedMarkers.push(markers[2]);
-//        selectedMarkers.push(markers[3]);
-//        calculateAndShowDistance(37.37219,-121.77663);
+        selectedMarkers.push(markers[2]);
+        selectedMarkers.push(markers[3]);
+        calculateAndShowDistance(lat0,lat1);
     }
 </script>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAIxQNvwDOPzEC4e1QRCbeW7MWGjNMf4lQ&callback=initMap" async defer></script>
