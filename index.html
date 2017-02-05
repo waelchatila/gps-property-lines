@@ -109,7 +109,7 @@
         }
         var html = '';
         if (distance) {
-            html += round(distance, 2)+'meters, &nbsp;'+round(distance/0.304)+'feet'
+            html += round(distance, 2)+'meters, &nbsp;'+round(distance/0.304, 2)+'feet'
         }
         $('#distance').html(html);
         return html;
