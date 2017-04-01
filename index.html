@@ -4,12 +4,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1.0">
-    <script src="//code.jquery.com/jquery-3.0.0.min.js"></script>
+    <script src="http://code.jquery.com/jquery-3.0.0.min.js"></script>
     <script src="vector3d.js"></script>
     <script src="latlon-ellipsoidal.js"></script>
     <script src="latlon-vincenty.js"></script>
     <script src="dms.js"></script>
     <script src="http://reachrover.local/static/socket.io.min.js"></script>
+    <!--<script src="http://reach.local/static/socket.io.min.js"></script>-->
     <style>
         /* Always set the map height explicitly to define the size of the div
          * element that contains the map. */
@@ -36,10 +37,12 @@
 <div id="tophead">
     <div id="me"></div>
     <div id="distance"></div>
+    <div style="background-color: aqua"><span id="average"></span> avg. <a href="#" onclick="historyArray=[];calculateAndShowAverage();false;">clear</a></div>
 </div>
 <div id="map"></div>
 <script>
     if (typeof io != 'undefined') {
+//        socket = io.connect("http://reach.local:80/test");
         socket = io.connect("http://reachrover.local:80/test");
         socket.on("coordinate broadcast", function(msg) {
             for (var k in msg) {
@@ -48,16 +51,19 @@
                     var ss = msg[k].split(',');
                     var lat = Number(ss[0]);
                     var lon = Number(ss[1]);
-                    if (me == null) {
-                        me = marker(lat,lon,'me');
+                    if (meMarker == null) {
+                        meMarker = marker(lat,lon,'me');
                     }
-                    me.setPosition( new google.maps.LatLng(lat, lon));
+                    meMarker.setPosition( new google.maps.LatLng(lat, lon));
                     calculateAndShowDistance(lat, lon);
+
+                    historyArray.push({lat: lat, lon: lon});
+                    calculateAndShowAverage();
                 }
             }
         });
     } else {
-        alert('can not reach rover');
+//        alert('can not reach rover');
     }
 
     LatLon.prototype.crossTrackDistanceTo = function(pathStart, pathEnd, radius) {
@@ -94,6 +100,23 @@
         return Number(Math.round(value+'e'+decimals)+'e-'+decimals);
     }
 
+    function calculateAndShowAverage() {
+        var averageLat = 0;
+        var averageLon = 0;
+        for (var i=0;i<historyArray.length;i++) {
+            var latlon = historyArray[i];
+            averageLat += latlon.lat;
+            averageLon += latlon.lon;
+        }
+        averageLat = averageLat / historyArray.length;
+        averageLon = averageLon / historyArray.length;
+        $('#average').html(averageLat+", "+averageLon);
+        if (avgMarker == null) {
+            avgMarker = marker(averageLat,averageLon,'avg');
+        }
+        avgMarker.setPosition( new google.maps.LatLng(averageLat, averageLon));
+    }
+
     function calculateAndShowDistance(lat,lon) {
         var me = new LatLon(lat, lon);
         var distance = null;
@@ -119,7 +142,9 @@
     var infoWindow;
     var markers = [];
     var selectedMarkers = [];
-    var me = null;
+    var meMarker = null;
+    var avgMarker = null;
+    var historyArray = [];
     var deedPoints = [
 //        ["5°N  47'W", 10.02],
         ["5°N  47'W", 623.01],
@@ -142,18 +167,17 @@
     var coordinatePoints = [];
 
     function marker(lat,lon, label) {
-        var small_yellow = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAi0lEQVR42mNgQIAoIF4NxGegdCCSHAMzEC+NijL7v3p1+v8zZ6rAdGCg4X+g+EyYorS0NNv////PxMCxsRYghbEgRQcOHCjGqmjv3kKQor0gRQ8fPmzHquj27WaQottEmxQLshubopAQI5CiEJjj54N8t3FjFth369ZlwHw3jQENgMJpIzSc1iGHEwB8p5qDBbsHtAAAAABJRU5ErkJggg=='
         var opts = {position: {lat: lat, lng: lon}, map: map}
         if (label == 'me') {
+            var small_yellow = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAi0lEQVR42mNgQIAoIF4NxGegdCCSHAMzEC+NijL7v3p1+v8zZ6rAdGCg4X+g+EyYorS0NNv////PxMCxsRYghbEgRQcOHCjGqmjv3kKQor0gRQ8fPmzHquj27WaQottEmxQLshubopAQI5CiEJjj54N8t3FjFth369ZlwHw3jQENgMJpIzSc1iGHEwB8p5qDBbsHtAAAAABJRU5ErkJggg=='
             opts['icon'] = small_yellow;
+        } else if (label == 'avg') {
+            var small_turquoise = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAi0lEQVR42mNgQIAoIF4NxGegdCCSHAMzEC+NMov6vzp99f8zVWfAdKBh4H+g+EyYorQ027T//2f+x8CxFrEghbEgRQcOFB/Aqmhv4V6Qor0gRQ8ftj/Equh2822QottEmxQLshubohCjEJCiEJjj54N8tzFrI9h36zLWwXw3jQENgMJpIzSc1iGHEwBt95qDejjnKAAAAABJRU5ErkJggg=='
+            opts['icon'] = small_turquoise;
         } else {
             opts['label'] = label;
         }
-        var ret = new google.maps.Marker(opts);
-        if (label != 'me') {
-            markers.push(ret);
-        }
-        return ret;
+        return new google.maps.Marker(opts);
     }
 
     function ft(ft){
@@ -161,8 +185,15 @@
     }
 
     function initMap() {
-        var lat0 = 37.37219;
-        var lon0 = -121.77663;
+        //a lat difference of 10e-4 == 11.098m
+        //a lat difference of 10e-5 == 1.1m
+        //a lat difference of 10e-6 == 0.11m
+        //a lon difference of 10e-4 == 8.858m
+        //a lon difference of 10e-5 == 0.86m
+        //a lon difference of 10e-6 == 0.089m
+
+        var lat0 = 37.371721;
+        var lon0 = -121.779662;
 
         infoWindow = new google.maps.InfoWindow({
             content: '',
@@ -176,8 +207,21 @@
         };
         map = new google.maps.Map(document.getElementById('map'), mapOptions);
 
+        map.addListener('click', function(event) {
+            var latitude = event.latLng.lat();
+            var longitude = event.latLng.lng();
+            var tempMarker = marker(latitude, longitude, 'me');
+            setTimeout(function(){
+                tempMarker.setMap(null);
+            },1000);
+
+            console.log( latitude + ', ' + longitude );
+        });
+
+
         var current_coordinate = new LatLon(lat0, lon0);
         marker(current_coordinate.lat, current_coordinate.lon, 'AC1');
+        markers.push(marker);
         coordinatePoints.push({lat: current_coordinate.lat, lng: current_coordinate.lon});
         for (var i=0; i < deedPoints.length; i++) {
             var deed_point = deedPoints[i];
@@ -186,6 +230,7 @@
             current_coordinate = current_coordinate.destinationPoint(distance, bearing);
             coordinatePoints.push({lat: current_coordinate.lat, lng: current_coordinate.lon});
             var new_marker = marker(current_coordinate.lat, current_coordinate.lon, deed_point[2]);
+            markers.push(new_marker);
             new_marker.addListener('click', function() {
                 var $this = this;
                 var indexFound = selectedMarkers.findIndex(function(el){return  el == $this} );
