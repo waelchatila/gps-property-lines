@@ -66,6 +66,20 @@
 //        alert('can not reach rover');
     }
 
+    function geo_success(position) {
+        console.log(position);
+        if (null == phoneGpsMarker) {
+            phoneGpsMarker = marker(position.coords.latitude, position.coords.longitude, "phone_gps");
+        }
+        phoneGpsMarker.setPosition( new google.maps.LatLng(position.coords.latitude, position.coords.longitude));
+    }
+
+    var wpid = navigator.geolocation.watchPosition(geo_success, function(){}, {
+        enableHighAccuracy: true,
+        maximumAge        : 30000,
+        timeout           : 27000
+    });
+
     LatLon.prototype.crossTrackDistanceTo = function(pathStart, pathEnd, radius) {
         if (!(pathStart instanceof LatLon)) throw new TypeError('pathStart is not LatLon object');
         if (!(pathEnd instanceof LatLon)) throw new TypeError('pathEnd is not LatLon object');
@@ -149,6 +163,7 @@
     var selectedMarkers = [];
     var meMarker = null;
     var avgMarker = null;
+    var phoneGpsMarker = null;
     var historyArray = [];
     var deedPoints = [
 //        ["5°N  47'W", 10.02],
@@ -179,6 +194,9 @@
         } else if (label == 'avg') {
             var small_purple = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAi0lEQVR42mNgQIAoIF4NxGegdCCSHAMzEC+NMov6vzp99f8zVWfAdKBh4H+g+EyYorQ027T//2f+x8CxFrEghbEgRQcOFB/Aqmhv4V6Qor0gRQ8ftj/Equh2822QottEmxQLshubohCjEJCiEJjj54N8tzFrI9h36zLWwXw3jQENgMJpIzSc1iGHEwBt95qDejjnKAAAAABJRU5ErkJggg=='
             opts['icon'] = small_purple;
+        } else if (label == 'phone_gps') {
+            var apa = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAiElEQVR42mNgQIAoIF4NxGegdCCSHAMzEC81izL7n746/X/VmSowbRho+B8oPhOmKM02zfb/TCzQItYCpDAWpOhA8YFirIoK9xaCFO0FKXrY/rAdq6Lm280gRbeJNikWZDc2RUYhRiBFITDHzwf5LmtjFth3GesyYL6bxoAGQOG0ERpO65DDCQDX7ovT++K9KQAAAABJRU5ErkJggg=='
+            opts['icon'] = apa;
         } else {
             opts['label'] = label;
         }
