@@ -49,8 +49,8 @@
                 if (k.includes("deg,m) rover")) {
                     $('#me').html(msg[k].replace(/,/g, ", "));
                     var ss = msg[k].split(',');
-                    var lat = Number(ss[0]) + deltaLat;
-                    var lon = Number(ss[1]) + deltaLon;
+                    var lat = Number(ss[0]) ;//+ deltaLat;
+                    var lon = Number(ss[1]) ;//+ deltaLon;
 
                     if (meMarker == null) {
                         meMarker = marker(lat,lon,'me');
@@ -63,7 +63,7 @@
             }
         });
     } else {
-        alert('can not reach rover');
+//        alert('can not reach rover');
     }
 
     LatLon.prototype.crossTrackDistanceTo = function(pathStart, pathEnd, radius) {
@@ -197,10 +197,18 @@
         //a lon difference of 10e-5 == 0.86m
         //a lon difference of 10e-6 == 0.089m
 
+        var pointAddressSign = new LatLon(37.37286193499998,-121.7781348064286);
+        var pointDrain = new LatLon(37.37171255, -121.77967378);
+        var pointSmallTelPole = new LatLon(37.37206108503451,-121.77741556902656);
+        var pointAC1 = new LatLon(37.372326114965496,-121.77659867902656);
+        var point0 = pointAC1;
+
 //        var lat0 = 37.37171255;
 //        var lon0=-121.77967378;
-        var lat0 = 37.37219;
-        var lon0 = -121.77663;
+//        var lat0=37.37206108503451;
+//        var lon0=-121.77741556902656;
+//        var lat0 = 37.37219;
+//        var lon0 = -121.77663;
 
         infoWindow = new google.maps.InfoWindow({
             content: '',
@@ -209,7 +217,7 @@
 
         var mapOptions = {
             zoom: 17,
-            center: new google.maps.LatLng(lat0, lon0),
+            center: new google.maps.LatLng(point0.lat, point0.lon),
             mapTypeId: 'satellite'
         };
         map = new google.maps.Map(document.getElementById('map'), mapOptions);
@@ -224,10 +232,12 @@
 
             console.log( latitude + ', ' + longitude );
         });
-//marker(lat0+deltaLat, lon0+deltaLon,"WELL");
 //        deedPoints=[];
+//        console.log(smallTelPole)
+//        marker(smallTelPole.lat, smallTelPole.lon, 'Tel');
 
-        var current_coordinate = new LatLon(lat0, lon0);
+
+        var current_coordinate = point0;
         marker(current_coordinate.lat, current_coordinate.lon, 'AC1');
         markers.push(marker);
         coordinatePoints.push({lat: current_coordinate.lat, lng: current_coordinate.lon});
