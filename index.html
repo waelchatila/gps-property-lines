@@ -49,13 +49,13 @@
                 if (k.includes("deg,m) rover")) {
                     $('#me').html(msg[k].replace(/,/g, ", "));
                     var ss = msg[k].split(',');
-                    var lat = Number(ss[0]);
-                    var lon = Number(ss[1]);
+                    var lat = Number(ss[0]) + deltaLat;
+                    var lon = Number(ss[1]) + deltaLon;
+
                     if (meMarker == null) {
                         meMarker = marker(lat,lon,'me');
                     }
                     meMarker.setPosition( new google.maps.LatLng(lat, lon));
-                    calculateAndShowDistance(lat, lon);
 
                     historyArray.push({lat: lat, lon: lon});
                     calculateAndShowAverage();
@@ -63,7 +63,7 @@
             }
         });
     } else {
-//        alert('can not reach rover');
+        alert('can not reach rover');
     }
 
     LatLon.prototype.crossTrackDistanceTo = function(pathStart, pathEnd, radius) {
@@ -115,20 +115,22 @@
             avgMarker = marker(averageLat,averageLon,'avg');
         }
         avgMarker.setPosition( new google.maps.LatLng(averageLat, averageLon));
+
+        calculateAndShowDistance(averageLat, averageLon);
     }
 
     function calculateAndShowDistance(lat,lon) {
-        var me = new LatLon(lat, lon);
+        var current = new LatLon(lat, lon);
         var distance = null;
         if (selectedMarkers.length == 1) {
             var position = selectedMarkers[0].getPosition();
-            distance = me.distanceTo(new LatLon(position.lat(), position.lng()));
+            distance = current.distanceTo(new LatLon(position.lat(), position.lng()));
         } else if (selectedMarkers.length == 2) {
             var position0 = selectedMarkers[0].getPosition();
             var position1 = selectedMarkers[1].getPosition();
             var latLon0 = new LatLon(position0.lat(), position0.lng());
             var latLon1 = new LatLon(position1.lat(), position1.lng());
-            distance = Math.abs(me.crossTrackDistanceTo(latLon0, latLon1));
+            distance = Math.abs(current.crossTrackDistanceTo(latLon0, latLon1));
         }
         var html = 'select a marker to calculate distance to it or select two markers to calculate distance to line';
         if (distance != null) {
@@ -137,6 +139,9 @@
         $('#distance').html(html);
         return html;
     }
+
+    window.deltaLat = ((37.37176536496549-37.37171255) );//+ (37.37287771515578-37.37286193499998)) / 2;
+    window.deltaLon = ((-121.77965328097343+121.77967378));// + (-121.77811235189438+121.7781348064286)) / 2;
 
     var map;
     var infoWindow;
@@ -172,8 +177,8 @@
             var small_yellow = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAi0lEQVR42mNgQIAoIF4NxGegdCCSHAMzEC+NijL7v3p1+v8zZ6rAdGCg4X+g+EyYorS0NNv////PxMCxsRYghbEgRQcOHCjGqmjv3kKQor0gRQ8fPmzHquj27WaQottEmxQLshubopAQI5CiEJjj54N8t3FjFth369ZlwHw3jQENgMJpIzSc1iGHEwB8p5qDBbsHtAAAAABJRU5ErkJggg=='
             opts['icon'] = small_yellow;
         } else if (label == 'avg') {
-            var small_turquoise = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAi0lEQVR42mNgQIAoIF4NxGegdCCSHAMzEC+NMov6vzp99f8zVWfAdKBh4H+g+EyYorQ027T//2f+x8CxFrEghbEgRQcOFB/Aqmhv4V6Qor0gRQ8ftj/Equh2822QottEmxQLshubohCjEJCiEJjj54N8tzFrI9h36zLWwXw3jQENgMJpIzSc1iGHEwBt95qDejjnKAAAAABJRU5ErkJggg=='
-            opts['icon'] = small_turquoise;
+            var small_purple = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAi0lEQVR42mNgQIAoIF4NxGegdCCSHAMzEC+NMov6vzp99f8zVWfAdKBh4H+g+EyYorQ027T//2f+x8CxFrEghbEgRQcOFB/Aqmhv4V6Qor0gRQ8ftj/Equh2822QottEmxQLshubohCjEJCiEJjj54N8tzFrI9h36zLWwXw3jQENgMJpIzSc1iGHEwBt95qDejjnKAAAAABJRU5ErkJggg=='
+            opts['icon'] = small_purple;
         } else {
             opts['label'] = label;
         }
@@ -192,6 +197,8 @@
         //a lon difference of 10e-5 == 0.86m
         //a lon difference of 10e-6 == 0.089m
 
+//        var lat0 = 37.37171255;
+//        var lon0=-121.77967378;
         var lat0 = 37.37219;
         var lon0 = -121.77663;
 
@@ -217,7 +224,8 @@
 
             console.log( latitude + ', ' + longitude );
         });
-
+//marker(lat0+deltaLat, lon0+deltaLon,"WELL");
+//        deedPoints=[];
 
         var current_coordinate = new LatLon(lat0, lon0);
         marker(current_coordinate.lat, current_coordinate.lon, 'AC1');
