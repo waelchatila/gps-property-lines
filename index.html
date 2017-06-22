@@ -10,7 +10,7 @@
     <script src="latlon-vincenty.js"></script>
     <script src="dms.js"></script>
     <script src="http://reachrover.local/static/socket.io.min.js"></script>
-    <!--<script src="http://reach.local/static/socket.io.min.js"></script>-->
+    <script src="http://reach.local/static/socket.io.min.js"></script>
     <style>
         /* Always set the map height explicitly to define the size of the div
          * element that contains the map. */
@@ -166,7 +166,7 @@
     var phoneGpsMarker = null;
     var historyArray = [];
     var deedPoints = [
-//        ["5°N  47'W", 10.02],
+        ["5°N  47'W", 10.02],
         ["5°N  47'W", 623.01],
         [180+80.25, 361.93], //        ["80S° 15'W", 361.93],
         ["5°N  47'W", 482.57],
@@ -180,7 +180,7 @@
         ["87N 15'W", 68.84],
         ["69N 45'W", 30.25],
         [180-22.916666666666667, 1061.98, 'RW'],
-        ["22N 55'W", 10.01],
+//        ["22N 55'W", 10.01],
         ["70N 15'E", 616.64],
         ["80N 15'E", 272.01],
     ];
@@ -215,10 +215,11 @@
         //a lon difference of 10e-5 == 0.86m
         //a lon difference of 10e-6 == 0.089m
 
-        var pointAddressSign = new LatLon(37.37286193499998,-121.7781348064286);
-        var pointDrain = new LatLon(37.37171255, -121.77967378);
-        var pointSmallTelPole = new LatLon(37.37206108503451,-121.77741556902656);
-        var pointAC1 = new LatLon(37.372326114965496,-121.77659867902656);
+        var pointAddressSign = new LatLon(37.372882898644065,-121.77810762650792); //height=297
+        var pointDrain = new LatLon( 37.37176385770473, -121.77965328097343);
+        var pointSmallTelPole = new LatLon(37.37212710667458, -121.77742838859558);
+//        var pointAC1 = new LatLon(37.372148208220445, -121.77662372589111);
+        var pointAC1 = new LatLon(37.37217588689621 , -121.77662723847206);
         var point0 = pointAC1;
 
 //        var lat0 = 37.37171255;
