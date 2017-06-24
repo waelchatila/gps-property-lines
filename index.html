@@ -43,8 +43,8 @@
 <div id="map"></div>
 <script>
     if (typeof io != 'undefined') {
-//        socket = io.connect("http://reach.local:80/test");
         socket = io.connect("http://reachrover.local:80/test");
+//        socket = io.connect("http://reach.local:80/test");
         socket.on("coordinate broadcast", function(msg) {
             for (var k in msg) {
                 if (k.includes("deg,m) rover")) {
@@ -64,7 +64,7 @@
             }
         });
     } else {
-//        alert('can not reach rover');
+        alert('can not reach rover');
     }
 
     function geo_success(position) {
