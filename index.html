@@ -42,7 +42,7 @@
 </div>
 <div id="map"></div>
 <script>
-    setInterval(function(){
+    var connectTimer = setInterval(function(){
         try {
             socket = io.connect("http://reachrover.local:80/test");
 //        socket = io.connect("http://reach.local:80/test");
@@ -64,6 +64,7 @@
                     }
                 }
             });
+            clearInterval(connectTimer);
         } catch (e) {
             $('#average').html('can not reach rover: '+e);
         }
