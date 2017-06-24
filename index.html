@@ -43,9 +43,9 @@
 <div id="map"></div>
 <script>
     setInterval(function(){
-        if (typeof io != 'undefined') {
+        try {
             socket = io.connect("http://reachrover.local:80/test");
-    //        socket = io.connect("http://reach.local:80/test");
+//        socket = io.connect("http://reach.local:80/test");
             socket.on("coordinate broadcast", function(msg) {
                 for (var k in msg) {
                     if (k.includes("deg,m) rover")) {
@@ -64,10 +64,10 @@
                     }
                 }
             });
-        } else {
-            alert('can not reach rover');
+        } catch (e) {
+            $('#average').html('can not reach rover: '+e);
         }
-    },1000)
+    },1000);
 
     function geo_success(position) {
         console.log(position);
@@ -107,7 +107,7 @@
         // see http://mathforum.org/library/drmath/view/55417.html
         var y = Math.sin(Δλ) * Math.cos(φ2);
         var x = Math.cos(φ1)*Math.sin(φ2) -
-                Math.sin(φ1)*Math.cos(φ2)*Math.cos(Δλ);
+            Math.sin(φ1)*Math.cos(φ2)*Math.cos(Δλ);
         var θ = Math.atan2(y, x);
 
         return (θ.toDegrees()+360) % 360;
